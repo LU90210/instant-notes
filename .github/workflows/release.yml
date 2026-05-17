@@ -1,0 +1,47 @@
+name: Release
+
+# 触发：推送 tag `vX.Y.Z` 后构建 zip 并发布到 GitHub Release
+# 上 Chrome Web Store 的自动化在 v0.2 加（需要 EXTENSION_ID + CLIENT_ID + CLIENT_SECRET + REFRESH_TOKEN secrets）
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack
+        run: |
+          cd dist
+          zip -r ../instant-notes-${{ github.ref_name }}.zip .
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: instant-notes-${{ github.ref_name }}.zip
+
+      # TODO v0.2: 自动上传到 Chrome Web Store
+      # - uses: mnao305/chrome-extension-upload@v5
+      #   with:
+      #     file-path: instant-notes-${{ github.ref_name }}.zip
+      #     extension-id: ${{ secrets.EXTENSION_ID }}
+      #     client-id: ${{ secrets.CLIENT_ID }}
+      #     client-secret: ${{ secrets.CLIENT_SECRET }}
+      #     refresh-token: ${{ secrets.REFRESH_TOKEN }}

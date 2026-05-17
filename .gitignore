@@ -1,0 +1,30 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Build output
+dist/
+.vite/
+*.tsbuildinfo
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# 本地秘密 / 测试
+*.local
+*.env
+secrets.local
+
+# 打包产物
+*.zip
+*.crx
