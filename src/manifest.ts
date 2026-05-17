@@ -8,7 +8,7 @@ export default defineManifest({
   name: 'InstantNotes',
   version: pkg.version,
   description: '阅读现场的 AI 笔记助手。选中文字 → 快捷键 → 累积到悬浮 AI 会话 → 一键导出 Markdown。',
-  default_locale: 'zh_CN',
+  // default_locale 暂不开启；用到 chrome.i18n.getMessage() 时再加 _locales/ 目录
 
   action: {
     default_popup: 'src/popup/index.html',
