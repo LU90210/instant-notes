@@ -15,7 +15,7 @@ export function ExpandedCard({ captures, onCollapse }: Props) {
 
       <div className="in-card-list">
         {captures.length === 0 ? (
-          <div className="in-empty">还没有捕获，按 ⌥⌘C 试试</div>
+          <div className="in-empty">还没有捕获，按 ⌥⇧C 试试</div>
         ) : captures.map((c, i) => (
           <div key={c.id} className="in-capture">
             <div className="in-capture-index">{i + 1}.</div>

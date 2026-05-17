@@ -31,7 +31,7 @@
 ## 数据流（捕获）
 
 ```
-用户按 ⌥⌘C
+用户按 ⌥⇧C
    ↓
 service-worker.ts → chrome.commands.onCommand
    ↓ chrome.tabs.sendMessage({ type: 'CAPTURE', askAI: false })
@@ -51,7 +51,7 @@ setCaptures(prev => [...prev, capture])  ← React 状态更新
 ## 数据流（生成 → 导出）
 
 ```
-用户按 ⌥⌘S
+用户按 ⌥⇧S
    ↓
 content/FloatingCard 收到 GENERATE → 展开 GeneratePanel（TODO）
    ↓

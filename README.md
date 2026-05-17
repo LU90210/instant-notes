@@ -6,7 +6,7 @@
 
 ## 它是什么
 
-在任何网页里选中文字按 `⌥⌘C`，文字加入页面右上角的浮动 AI 会话；读完按 `⌥⌘S`，AI 基于你**人工筛选过的上下文**输出结构化笔记 / 简要概括 / 原文存档，保存为 Markdown 文件到你选的目录（首选 Obsidian / Logseq vault）。
+在任何网页里选中文字按 `⌥⇧C`（macOS）/ `Alt+Shift+C`，文字加入页面右上角的浮动 AI 会话；读完按 `⌥⇧S`，AI 基于你**人工筛选过的上下文**输出结构化笔记 / 简要概括 / 原文存档，保存为 Markdown 文件到你选的目录（首选 Obsidian / Logseq vault）。
 
 **核心理念**：别人是「读 → 同步 → 在 KB 里调 AI」，本项目是「读的同时筛选喂 AI → 读完即得入库笔记」。把工作流从**三步异步**压缩成**一步同步**。
 
@@ -44,18 +44,18 @@ npm run dev
 
 1. **填 API Key**：扩展图标 → 设置 → 粘贴你的 Anthropic Key（[这里申请](https://console.anthropic.com/)）
 2. **检查快捷键**（可选改）：`chrome://extensions/shortcuts`
-3. 访问任意网页，选中文字按 `⌥⌘C`，右上角浮球计数 +1
+3. 访问任意网页，选中文字按 `⌥⇧C`（macOS）/ `Alt+Shift+C`（其它），右上角浮球计数 +1
 
 ## 快捷键
 
-| 快捷键（macOS） | 默认（其它） | 作用 |
-|---|---|---|
-| `⌥⌘C` | `Alt+Shift+C` | 静默捕获选中文字（仅入队列） |
-| `⌥⌘A` | `Alt+Shift+A` | 捕获并立即问 AI |
-| `⌥⌘L` | `Alt+Shift+L` | 唤出 / 隐藏悬浮卡 |
-| `⌥⌘S` | `Alt+Shift+S` | 终态生成 + 导出 |
+| 快捷键（默认） | 作用 |
+|---|---|
+| `Alt+Shift+C`（Mac: ⌥⇧C） | 静默捕获选中文字（仅入队列） |
+| `Alt+Shift+A`（Mac: ⌥⇧A） | 捕获并立即问 AI |
+| `Alt+Shift+L`（Mac: ⌥⇧L） | 唤出 / 隐藏悬浮卡 |
+| `Alt+Shift+S`（Mac: ⌥⇧S） | 终态生成 + 导出 |
 
-均可在 `chrome://extensions/shortcuts` 自定义。
+**自定义**：访问 `chrome://extensions/shortcuts` 找到 InstantNotes，可改成你喜欢的组合（recorder 接受 ⌥⌘ 等 manifest 不允许的双修饰键组合）。
 
 ## 隐私
 

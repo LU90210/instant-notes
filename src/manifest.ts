@@ -37,21 +37,24 @@ export default defineManifest({
   // <all_urls> 是 content_scripts 与扩展内 fetch 的前提
   host_permissions: ['<all_urls>'],
 
+  // 注：Chrome manifest 不允许 Alt+Command 这类「双主修饰键」组合，
+  // 每个 command 最多 1 个 Ctrl/Alt/Command/MacCtrl + 可选 Shift。
+  // 装好后可在 chrome://extensions/shortcuts 手动改成 ⌥⌘ 等组合（recorder 比 manifest 宽松）。
   commands: {
     'silent-capture': {
-      suggested_key: { default: 'Alt+Shift+C', mac: 'Alt+Command+C' },
+      suggested_key: { default: 'Alt+Shift+C' },
       description: '静默捕获选区（不调用 AI）'
     },
     'capture-and-ask': {
-      suggested_key: { default: 'Alt+Shift+A', mac: 'Alt+Command+A' },
+      suggested_key: { default: 'Alt+Shift+A' },
       description: '捕获选区并立即问 AI'
     },
     'toggle-floating': {
-      suggested_key: { default: 'Alt+Shift+L', mac: 'Alt+Command+L' },
+      suggested_key: { default: 'Alt+Shift+L' },
       description: '唤出 / 隐藏悬浮卡'
     },
     'generate': {
-      suggested_key: { default: 'Alt+Shift+S', mac: 'Alt+Command+S' },
+      suggested_key: { default: 'Alt+Shift+S' },
       description: '终态生成 + 导出'
     }
   }
