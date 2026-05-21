@@ -1,4 +1,5 @@
-export type CaptureKind = 'text' | 'fulltext' | 'video-marker'
+// 'text' = 网页选区原文；'note' = 用户自己的 Aha moment / 想法
+export type CaptureKind = 'text' | 'note' | 'fulltext' | 'video-marker'
 
 export interface Capture {
   id: string
@@ -22,7 +23,8 @@ export interface Session {
   status: 'active' | 'archived'
 }
 
-export type GenerationMode = 'brief' | 'structured' | 'raw' | 'combo'
+// 精简=brief / 正常=structured / 详细=detailed（均调用 AI）；原文导出=raw（不调用 AI）
+export type GenerationMode = 'brief' | 'structured' | 'detailed' | 'raw'
 
 export interface Generation {
   id: string
@@ -37,11 +39,13 @@ export interface Generation {
 
 export type CommandName =
   | 'silent-capture'
-  | 'capture-and-ask'
+  | 'capture-note'
   | 'toggle-floating'
   | 'generate'
 
 export type Message =
-  | { type: 'CAPTURE'; askAI: boolean }
+  | { type: 'CAPTURE' }
+  | { type: 'NOTE' }            // 唤起 Aha moment 输入框
   | { type: 'TOGGLE_FLOATING' }
   | { type: 'GENERATE' }
+  | { type: 'DOWNLOAD_MARKDOWN'; content: string; filename: string }

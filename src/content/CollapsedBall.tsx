@@ -12,7 +12,7 @@ export function CollapsedBall({ count, onTap, pulseKey }: Props) {
   useEffect(() => {
     if (pulseKey === 0) return
     setPulsing(true)
-    const t = setTimeout(() => setPulsing(false), 280)
+    const t = setTimeout(() => setPulsing(false), 560)
     return () => clearTimeout(t)
   }, [pulseKey])
 

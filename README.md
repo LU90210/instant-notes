@@ -1,115 +1,152 @@
 # InstantNotes（浏览器扩展）
 
-> 阅读现场的 AI 笔记助手。选中文字 → 快捷键 → 累积到悬浮 AI 会话 → 一键导出 Markdown 入库。
+> 中文默认 · English version below
 
-<!-- TODO: 录制 Demo GIF -->
+InstantNotes 是一个阅读现场的 AI 笔记浏览器扩展：在网页中选中文字，按快捷键捕获到当前阅读 Session；读完后基于这些人工筛选过的内容生成结构化 Markdown 笔记，并复制或导出到你的知识库。
 
-## 它是什么
+默认 AI 接入为 OpenRouter。捕获内容和设置本地优先保存，项目不自建后端。
 
-在任何网页里选中文字按 `⌥⇧C`（macOS）/ `Alt+Shift+C`，文字加入页面右上角的浮动 AI 会话；读完按 `⌥⇧S`，AI 基于你**人工筛选过的上下文**输出结构化笔记 / 简要概括 / 原文存档，保存为 Markdown 文件到你选的目录（首选 Obsidian / Logseq vault）。
+## Product Definition Brief（产品定义简报）
 
-**核心理念**：别人是「读 → 同步 → 在 KB 里调 AI」，本项目是「读的同时筛选喂 AI → 读完即得入库笔记」。把工作流从**三步异步**压缩成**一步同步**。
+### 核心问题
 
-## 与同类的差异
+阅读网页、文档、技术博客、论文或长文章时，真正有价值的片段和瞬间洞察很容易丢失。不是因为它们不重要，而是因为捕捉、整理、加工并入库的摩擦太高。
 
-| 项目 | 它做什么 | InstantNotes 差异 |
-|---|---|---|
-| Readwise / Cubox / Heptabase | 高亮 → 同步 KB | AI 是核心而非附属；不挑 KB |
-| Notion AI / Obsidian Copilot | KB 内对已存笔记做 AI | 把 AI **前置到阅读现场**，不是事后处理 |
-| Glasp / MyMind | 浏览器高亮 + AI 卡片 | 多次累积成上下文，读完一次性产出长形态笔记 |
-| ChatGPT Web 选区问 | 单次问答 | 累积上下文 + 终态多模式生成 + 导出到 KB |
+传统流程通常是：先高亮或复制内容，再切换到笔记工具，再组织上下文，再事后调用 AI 总结。这会打断阅读现场，也让很多原本值得保留的想法在切换工具之前就消失。
 
-## 安装
+InstantNotes 的目标是降低从“看到有价值内容”到“形成可回顾笔记”的摩擦，让捕捉阅读中的 Aha moment 变成一种轻量、近乎无意识的动作。
 
-> 当前处于早期开发，未发布到 Chrome Web Store。
+### 用户与场景
 
-### 从源码开发模式安装
-1. 克隆并构建
-   ```bash
-   git clone https://github.com/<your-handle>/instant-notes.git
-   cd instant-notes
-   npm install
-   npm run build
-   ```
-2. 打开 `chrome://extensions/` → 开启「开发者模式」→ 点「加载已解压的扩展程序」→ 选择 `dist/` 目录
-3. 浏览器工具栏出现 InstantNotes 图标后，访问任意网页验证
+主要用户是正在网页中阅读、研究、查资料、看教程、读产品文档或浏览长文章的人。用户不想离开当前页面，也不想为了记录一个想法而打断阅读节奏去打开 Obsidian、Notion、Logseq 或 ChatGPT。
 
-### 开发模式（HMR）
+用户愿意做的最小动作是：选中一段文字，然后按一个快捷键。这个动作只表达一件事：这段内容值得被保留、进入当前阅读会话，并在之后交给 AI 处理。
+
+### 产品判断
+
+InstantNotes 的核心理念是：把 AI 前置到阅读现场。
+
+它不是“读完之后再整理”，而是“阅读时筛选上下文，读完即得入库笔记”。AI 不应该无差别总结整篇网页，而应该基于用户主动捕获的上下文工作。
+
+## MVP（最小可行产品）
+
+一个仍然让人感觉像魔法的最小版本应该做到：
+
+- 网页选区捕获：选中文字后按 `⌥⇧C` / `Alt+Shift+C`，内容进入当前 Session。
+- 我的想法：按 `⌥⇧D` / `Alt+Shift+D`，在当前页面快速记录自己的判断、疑问或 Aha moment。
+- 悬浮反馈：页面中有轻量浮球和悬浮窗，显示当前 Session 已捕获数量。
+- 打开/收起悬浮窗：按 `⌥⇧L` / `Alt+Shift+L`，直接打开或收起悬浮窗。
+- 可控预览：长捕获默认截断，单条可展开/收起，也可一键全部展开/收起。
+- Session 自动归属：按页面 URL 与时间窗口自动把捕获内容聚合到同一会话。
+- OpenRouter 生成：填写 OpenRouter API Key 后读取模型列表，选择模型生成笔记。
+- 多种输出：支持精简、正常、详细三档结构化概括，以及不调用 AI 的原文导出。
+- Markdown 交付：生成结果可复制，也可导出为 `.md` 文件，便于进入 Obsidian、Logseq 或其他知识库。
+- Local-first：捕获记录保存在 IndexedDB，API Key 保存在 `chrome.storage.local`。
+
+## 快速开始
+
 ```bash
-npm run dev
+npm install
+npm run build
 ```
-和「加载已解压」配合，content script / popup / options 都支持热更新。
 
-## 首次使用（3 步）
+然后打开 `chrome://extensions/`，开启「开发者模式」，选择「加载已解压的扩展程序」，加载项目的 `dist/` 目录。
 
-1. **填 API Key**：扩展图标 → 设置 → 粘贴你的 Anthropic Key（[这里申请](https://console.anthropic.com/)）
-2. **检查快捷键**（可选改）：`chrome://extensions/shortcuts`
-3. 访问任意网页，选中文字按 `⌥⇧C`（macOS）/ `Alt+Shift+C`（其它），右上角浮球计数 +1
+首次使用时打开扩展设置页，填写 OpenRouter API Key，点击「读取 OpenRouter 模型」，选择一个模型后保存。
 
-## 快捷键
+## 默认快捷键
 
-| 快捷键（默认） | 作用 |
+| 快捷键 | 作用 |
 |---|---|
-| `Alt+Shift+C`（Mac: ⌥⇧C） | 静默捕获选中文字（仅入队列） |
-| `Alt+Shift+A`（Mac: ⌥⇧A） | 捕获并立即问 AI |
-| `Alt+Shift+L`（Mac: ⌥⇧L） | 唤出 / 隐藏悬浮卡 |
-| `Alt+Shift+S`（Mac: ⌥⇧S） | 终态生成 + 导出 |
+| `⌥⇧C` / `Alt+Shift+C` | 捕获网页选区 |
+| `⌥⇧D` / `Alt+Shift+D` | 记录我的想法 |
+| `⌥⇧L` / `Alt+Shift+L` | 打开 / 收起悬浮窗 |
+| `⌥⇧S` / `Alt+Shift+S` | 打开生成与导出面板 |
 
-**自定义**：访问 `chrome://extensions/shortcuts` 找到 InstantNotes，可改成你喜欢的组合（recorder 接受 ⌥⌘ 等 manifest 不允许的双修饰键组合）。
+快捷键可在 `chrome://extensions/shortcuts` 自定义。
 
 ## 隐私
 
-- **所有捕获、生成记录均存于浏览器本地 IndexedDB**
-- **API Key 存 `chrome.storage.local`**（扩展沙盒隔离）
-- **AI 调用直连 Anthropic**，作者不接触你的数据，**项目无后端**
-- **无任何分析 / 埋点 / 第三方网络请求**
+- 捕获内容默认保存在浏览器本地 IndexedDB。
+- API Key 保存在 `chrome.storage.local`。
+- 项目不自建后端，不接触用户数据。
+- AI 请求从扩展直接发往用户配置的 OpenRouter。
 
-## 自定义 Prompt 模板
+## 开发脚本
 
-设置页有三种终态模板（简要 / 结构化 / 原文 + 旁注），可直接编辑。占位符 `{captures}` `{n}` 等说明见 [docs/templates.md](docs/templates.md)。
+```bash
+npm run build
+npm run dev
+npm run typecheck
+```
 
-## 路线图
+## License
 
-### MVP（v0.1.0，约 1-2 周）
-- 网页选区捕获 + 浮球计数（Shadow DOM 隔离样式）
-- 可拖拽 / 折叠悬浮卡
-- 全局快捷键四件套
-- Session 自动归属（按 tab URL + 时间窗口）
-- 三种终态生成（BYOK Anthropic 流式）
-- 导出 `.md` 通过 `chrome.downloads`
+[MIT](LICENSE)
 
-### v1.1（+1 周）
-- 全文一键入会话（[@mozilla/readability](https://github.com/mozilla/readability)）
-- 视频时间点标记（YouTube / Bilibili 拿 `currentTime`）
-- 图片 OCR（Tesseract.js 本地）
-- Session 历史与重开
+---
 
-### v2（+2 周）
-- 视频关键帧抽取（canvas 抓 video frame）
-- 多 Provider（OpenAI / Gemini / Ollama via fetch）
-- Firefox 移植（webextension-polyfill）
+# InstantNotes (Chrome Extension)
 
-### v3
-- Safari 扩展（需 Xcode，单独分支）
-- iOS Safari 扩展
+InstantNotes is an AI note-taking browser extension for the moment of reading. Select text on any webpage, capture it into the current reading session with a shortcut, then generate a structured Markdown note from the context you intentionally selected.
 
-## 贡献
+The default AI provider is OpenRouter. Captures and settings are local-first, and the project does not run its own backend.
 
-欢迎贡献！特别欢迎：
-- **Prompt 模板贡献**（最低门槛，无需 JS/TS）
-- **README 翻译**（英文 / 日文 / 其它）
-- **网站兼容性测试**（在你常用的站点验证 Shadow DOM 注入与选区捕获）
-- **Bug 修复 / Bug 复现**
+## Product Definition Brief
 
-详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+### Core Problem
 
-## 协议
+When reading webpages, docs, technical blogs, papers, or long articles, valuable passages and fleeting insights are easy to lose. The problem is not that they are unimportant; the problem is that capturing, organizing, processing, and saving them creates too much friction.
 
-[MIT](LICENSE) — 自由 fork、商用、修改。
+The traditional workflow is fragmented: highlight or copy something, switch to a note-taking app, reconstruct the context, then ask AI to summarize later. This interrupts the reading flow and lets many useful thoughts disappear before they become notes.
 
-## 致谢
+InstantNotes aims to reduce the friction between “this matters” and “this becomes a reusable note.”
 
-- [@crxjs/vite-plugin](https://github.com/crxjs/chrome-extension-tools) — Manifest V3 + Vite + HMR
-- [Dexie](https://dexie.org/) — IndexedDB 封装
-- [@mozilla/readability](https://github.com/mozilla/readability) — 正文抽取
-- Anthropic Claude — 默认 AI Provider
+### User and Context
+
+The primary user is someone reading, researching, studying docs, following tutorials, or browsing long-form content on the web. They do not want to leave the current page or break their reading rhythm just to preserve a useful thought.
+
+The smallest acceptable action is: select a passage and press a shortcut. That action means: this piece of context is worth keeping and should be available for AI-assisted synthesis later.
+
+### Product Thesis
+
+InstantNotes brings AI into the reading moment.
+
+It is not “read first, organize later.” It is “select meaningful context while reading, then finish with a ready-to-review Markdown note.” AI should not summarize an entire page indiscriminately; it should work from the context the user deliberately captured.
+
+## MVP
+
+The smallest magical version should include:
+
+- Web selection capture with `⌥⇧C` / `Alt+Shift+C`.
+- Personal thoughts with `⌥⇧D` / `Alt+Shift+D`.
+- A floating ball and floating window showing the current session count.
+- Direct open/collapse for the floating window with `⌥⇧L` / `Alt+Shift+L`.
+- Truncated long previews with per-item and global expand/collapse controls.
+- Automatic session grouping by URL and time window.
+- OpenRouter setup with API key storage, model loading, and model selection.
+- Brief, normal, detailed, and raw Markdown output modes.
+- Copy and `.md` export for the final note.
+- Local-first storage via IndexedDB and `chrome.storage.local`.
+
+## Quick Start
+
+```bash
+npm install
+npm run build
+```
+
+Open `chrome://extensions/`, enable Developer Mode, choose “Load unpacked,” and select the `dist/` directory.
+
+Configure your OpenRouter API key in the extension options page, load the model list, choose a model, and save.
+
+## Default Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `⌥⇧C` / `Alt+Shift+C` | Capture selected webpage text |
+| `⌥⇧D` / `Alt+Shift+D` | Record a personal thought |
+| `⌥⇧L` / `Alt+Shift+L` | Open / collapse the floating window |
+| `⌥⇧S` / `Alt+Shift+S` | Open the generate/export panel |
+
+Shortcuts can be customized at `chrome://extensions/shortcuts`.

@@ -8,7 +8,7 @@ InstantNotes 在 `manifest.json` 声明的所有权限及其用途：
 | `downloads` | `chrome.downloads.download` 触发 Markdown 文件保存对话框 | 是（导出） |
 | `activeTab` | 全局快捷键触发时拿当前 tab 信息 | 是 |
 | `scripting` | 未来给「全文一键入会话」用 `chrome.scripting.executeScript` 注入 Readability | v1.1 |
-| `host_permissions: <all_urls>` | 允许 content script 注入到任意网站、允许 `fetch` 到任意 host（含 Anthropic API） | 是 |
+| `host_permissions: <all_urls>` | 允许 content script 注入到任意网站、允许 `fetch` 到 OpenRouter API | 是 |
 
 ## 我们不要这些权限
 
@@ -22,7 +22,7 @@ InstantNotes 在 `manifest.json` 声明的所有权限及其用途：
 
 - 所有捕获 / 生成数据存于浏览器本地 IndexedDB（`InstantNotes` 数据库）
 - API Key 存 `chrome.storage.local`，扩展沙盒隔离
-- AI 调用直连 `api.anthropic.com`（用户填的 Key），**项目无后端**
+- AI 调用直连 `openrouter.ai`（用户填的 Key），**项目无后端**
 - 无任何分析 / 埋点 / 第三方网络请求
 
 ## 卸载时数据去哪了

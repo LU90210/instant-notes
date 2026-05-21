@@ -4,6 +4,7 @@ import { FloatingCard } from './FloatingCard'
 import cardCss from '../styles/card.css?inline'
 
 const HOST_ID = '__instantnotes_host__'
+const POSITION_KEY = 'in_floating_position_v1'
 
 // 通过 Shadow DOM 隔离样式，避免被宿主页面 CSS 污染
 function mount() {
@@ -11,14 +12,14 @@ function mount() {
 
   const host = document.createElement('div')
   host.id = HOST_ID
-  host.style.cssText = [
-    'position: fixed',
-    'top: 16px',
-    'right: 16px',
-    'z-index: 2147483647',
-    'pointer-events: none',
-    'all: initial'
-  ].join('; ')
+  // all 会重置 position/top/right/z-index，必须先设，再逐项恢复悬浮定位。
+  host.style.all = 'initial'
+  host.style.display = 'block'
+  host.style.position = 'fixed'
+  host.style.top = '16px'
+  host.style.right = '16px'
+  host.style.zIndex = '2147483647'
+  host.style.pointerEvents = 'none'
 
   const shadow = host.attachShadow({ mode: 'open' })
 
@@ -30,8 +31,8 @@ function mount() {
   mountNode.style.pointerEvents = 'auto'
   shadow.appendChild(mountNode)
 
-  document.documentElement.appendChild(host)
-  createRoot(mountNode).render(<FloatingCard />)
+  ;(document.documentElement || document.body).appendChild(host)
+  createRoot(mountNode).render(<FloatingCard host={host} positionStorageKey={POSITION_KEY} />)
 }
 
 if (document.readyState === 'loading') {

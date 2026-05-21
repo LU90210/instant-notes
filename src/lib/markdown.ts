@@ -9,37 +9,72 @@ export interface RenderArgs {
   mode: GenerationMode
   aiOutput: string
   captures: Capture[]
+  mergeNotes: boolean
+}
+
+function formatTime(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function quoteNote(content: string): string {
+  return `> 💡 我的想法：${content.split('\n').join(' ')}`
 }
 
 export function renderMarkdown(a: RenderArgs): string {
-  let s = '---\n'
-  s += `source_url: ${a.sourceUrl}\n`
-  s += `captured_at: ${a.capturedAt.toISOString()}\n`
-  s += `capture_count: ${a.captureCount}\n`
-  s += `model: ${a.model}\n`
-  s += `mode: ${a.mode}\n`
-  s += '---\n\n'
-  s += `# ${a.displayName}\n\n`
-  s += a.aiOutput.trim()
-  s += '\n'
+  let s = `# ${a.displayName}\n\n`
 
-  if (a.mode === 'combo') {
-    s += '\n## 原文存档\n\n'
+  if (a.mode === 'raw') {
+    // 原文导出：不调用 AI，按捕获顺序逐条呈现，区分原文与我的想法
     for (const c of a.captures) {
-      const quoted = c.content.split('\n').map(l => `> ${l}`).join('\n')
-      s += `${quoted}\n\n`
+      if (c.kind === 'note') {
+        s += `${quoteNote(c.content)}\n\n`
+      } else {
+        const quoted = c.content.split('\n').map(l => `> ${l}`).join('\n')
+        s += `${quoted}\n\n`
+      }
+    }
+  } else {
+    s += a.aiOutput.trim() + '\n'
+    // 未融合时，把个人想法明确单列在结尾，避免与原文混淆
+    if (!a.mergeNotes) {
+      const notes = a.captures.filter(c => c.kind === 'note')
+      if (notes.length) {
+        s += '\n## 💡 我的想法\n\n'
+        for (const n of notes) s += `${quoteNote(n.content)}\n\n`
+      }
     }
   }
+
+  // 轻量元信息放在结尾：来源标题 + 链接、时间、条数、模型
+  s += '\n---\n'
+  s += `来源：[${a.displayName}](${a.sourceUrl})\n\n`
+  s += `捕获时间：${formatTime(a.capturedAt)} · 共 ${a.captureCount} 条`
+  if (a.model) s += ` · 模型：${a.model}`
+  s += '\n'
   return s
 }
 
-// 通过 chrome.downloads 触发保存对话框
-export function downloadMarkdown(content: string, suggestedName: string): void {
-  const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
+// 通过 background service worker 触发保存对话框，避免 content script 直接调用 downloads 不稳定。
+export function downloadMarkdown(content: string, suggestedName: string): Promise<void> {
   const filename = suggestedName.endsWith('.md') ? suggestedName : `${suggestedName}.md`
-  chrome.downloads.download({ url, filename, saveAs: true }, () => {
-    URL.revokeObjectURL(url)
+
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(
+      { type: 'DOWNLOAD_MARKDOWN', content, filename },
+      (response?: { ok?: boolean; error?: string }) => {
+        const err = chrome.runtime.lastError
+        if (err) {
+          reject(new Error(err.message))
+          return
+        }
+        if (!response?.ok) {
+          reject(new Error(response?.error ?? '导出失败'))
+          return
+        }
+        resolve()
+      }
+    )
   })
 }
 

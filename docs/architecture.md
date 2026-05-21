@@ -17,7 +17,7 @@
 │  · 接收 CAPTURE/TOGGLE/GENERATE 消息         │
 │  · 读取 window.getSelection()                │
 │  · 写入 IndexedDB（Dexie）                   │
-│  · 直连 Anthropic API（fetch + SSE）         │
+│  · 直连 OpenRouter API（fetch + SSE）        │
 └──────────────────────────────────────────────┘
                        │
                        ▼
@@ -34,7 +34,7 @@
 用户按 ⌥⇧C
    ↓
 service-worker.ts → chrome.commands.onCommand
-   ↓ chrome.tabs.sendMessage({ type: 'CAPTURE', askAI: false })
+   ↓ chrome.tabs.sendMessage({ type: 'CAPTURE' })
 content/FloatingCard.tsx 收到消息
    ↓
 window.getSelection().toString()
@@ -57,7 +57,7 @@ content/FloatingCard 收到 GENERATE → 展开 GeneratePanel（TODO）
    ↓
 用户选 mode + model + 默认目录 → fillPrompt(template, {captures, n})
    ↓
-streamAnthropic({apiKey, model, prompt}) → AsyncGenerator<string>
+streamOpenRouter({apiKey, model, prompt}) → AsyncGenerator<string>
    ↓
 逐字累积到面板，结束后 renderMarkdown() → string
    ↓
@@ -72,7 +72,7 @@ db.generations.put({ exportedTo: ... })
 - **`pointer-events: none` on host + `pointer-events: auto` on inner**：让卡片外的点击穿透到页面
 - **`z-index: 2147483647`**：32-bit 最大正数，保证浮在所有页面元素上
 - **Local-first**：IndexedDB 存所有数据；chrome.storage.local 仅存 settings；导出走 chrome.downloads
-- **直连 Anthropic**：content script 用 `anthropic-dangerous-direct-browser-access: true` header opt-in；不走 background 中转（少一次消息往返）
+- **直连 OpenRouter**：content script 走 `https://openrouter.ai/api/v1/chat/completions`；不走 background 中转（少一次消息往返）
 - **Manifest V3**：service worker（非持久 background page），事件驱动，省内存
 
 ## 已知边界

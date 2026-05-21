@@ -28,7 +28,7 @@ export default defineManifest({
   content_scripts: [{
     matches: ['<all_urls>'],
     js: ['src/content/index.tsx'],
-    run_at: 'document_idle',
+    run_at: 'document_start',
     all_frames: false
   }],
 
@@ -43,15 +43,15 @@ export default defineManifest({
   commands: {
     'silent-capture': {
       suggested_key: { default: 'Alt+Shift+C' },
-      description: '静默捕获选区（不调用 AI）'
+      description: '捕获网页选区（不调用 AI）'
     },
-    'capture-and-ask': {
-      suggested_key: { default: 'Alt+Shift+A' },
-      description: '捕获选区并立即问 AI'
+    'capture-note': {
+      suggested_key: { default: 'Alt+Shift+D' },
+      description: '记录我的 Aha moment / 想法'
     },
     'toggle-floating': {
       suggested_key: { default: 'Alt+Shift+L' },
-      description: '唤出 / 隐藏悬浮卡'
+      description: '打开 / 收起悬浮窗'
     },
     'generate': {
       suggested_key: { default: 'Alt+Shift+S' },
